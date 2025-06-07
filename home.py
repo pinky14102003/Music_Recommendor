@@ -5,6 +5,7 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
 
+
 st.set_page_config(layout='wide')
 
 s=pd.read_csv('dataset.csv')
