@@ -47,7 +47,7 @@ def basicrecommend(name):
   p=p[['danceability', 'energy','loudness','speechiness','acousticness','instrumentalness', 'liveness', 'valence']]
   print(p)
   distances, indices = nn.kneighbors(p)
-  return s.iloc[[int(i) for i in indices[0]]][['track_name','album_name','artists']]
+  return s.iloc[[int(i) for i in indices[0]]][['track_id','track_name','album_name','artists']]
 
 
 
@@ -79,3 +79,50 @@ if b:
     #       c2.subheader(e.loc[i,'artists'])
     #       c3.subheader(e.loc[i,'album_name'])
 
+st.sidebar.write("""
+This Feedback section is under Development please skip
+""")
+form1=st.sidebar.form('1')
+with form1:
+    st.write("Your Feedback")
+    r1=st.radio("Did the model reccomend you songs according \
+                      to your current mood ?",['Yes','Partially','No'])
+    r2=st.radio("Did the model reccomend you songs according \
+                      to your current favourite artist ?",['Yes','Partially','No'])
+    r3=st.radio("Did the model reccomend you songs according \
+                      to your current favourite genre ?",['Yes','Partially','No'])
+    r4=st.radio("Did the model help you sustain or improve your mood ?",['Yes','Partially','No'])
+    
+    f1 = st.text_area("Overall review", height=150)
+    submitted = st.form_submit_button("Submit")
+    if submitted:
+       pass
+       
+
+
+import streamlit as st
+import streamlit as st
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+
+# Set up Spotify credentials
+SPOTIPY_CLIENT_ID = '3e42d2e4c66c4bcebb10ba7c216edf86'
+SPOTIPY_CLIENT_SECRET = '872d5fe12bae4aa5abd92359f0c39f7f'
+SPOTIPY_REDIRECT_URI = 'https://music-recommendor-pjxy.onrender.com/'  # Your Streamlit app URL
+
+# Authentication
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
+    client_id=SPOTIPY_CLIENT_ID,
+    client_secret=SPOTIPY_CLIENT_SECRET,
+    redirect_uri=SPOTIPY_REDIRECT_URI,
+    scope="user-read-playback-state,user-modify-playback-state"
+))
+
+def play_track(track_id):
+    sp.start_playback(uris=[f'spotify:track:{track_id}'])
+
+track_id = st.text_input("Enter Spotify Track ID")
+if st.button("Play Song") and track_id:
+    play_track(track_id)
+    st.success(f"Playing track {track_id}")
+   
