@@ -38,7 +38,7 @@ de=s[['danceability', 'energy','loudness','speechiness','acousticness','instrume
 ss=StandardScaler()
 de=ss.fit_transform(de)
 from sklearn.neighbors import NearestNeighbors
-nn=NearestNeighbors(n_neighbors=10,metric='euclidean')
+nn=NearestNeighbors(n_neighbors=10,metric='cosine')
 nn.fit(de)
 s[['danceability', 'energy','loudness','speechiness','acousticness','instrumentalness', 'liveness', 'valence']]=pd.DataFrame(de)
 def basicrecommend(name):
@@ -47,7 +47,7 @@ def basicrecommend(name):
   p=p[['danceability', 'energy','loudness','speechiness','acousticness','instrumentalness', 'liveness', 'valence']]
   print(p)
   distances, indices = nn.kneighbors(p)
-  return s.iloc[[int(i) for i in indices[0]]][['track_id','track_name','album_name','artists']]
+  return s.iloc[[int(i) for i in indices[0]]][['track_id','track_name','album_name','artists','track_genre']]
 
 
 
@@ -64,21 +64,13 @@ a=st.selectbox('Enter Your Song Name',options=s['track_name'])
 b=st.button('Search')
 if b:
     e=basicrecommend(a)
+    z=e['track_id'].reset_index(drop=True)
     e=e.reset_index(drop=True)
     st.header("You May also like")
     st.dataframe(e)
-    # c1,c2,c3=st.columns(3)
-    # c1.title('Song Name')
-    # c2.title('Artist')
-    # c3.title('Album')
-    # for i in range(e.shape[0]):
-    #    d=st.container()
-    #    with d:
-    #       c1,c2,c3=st.columns(3)
-    #       c1.subheader(e.loc[i,'track_name'])
-    #       c2.subheader(e.loc[i,'artists'])
-    #       c3.subheader(e.loc[i,'album_name'])
-
+    for i in range(len(z)):
+      spotify_url = f"https://open.spotify.com/track/{z.loc[i]}"
+      st.markdown(f"[{e.loc[i,'track_name']}]({spotify_url})")
 st.sidebar.write("""
 This Feedback section is under Development please skip
 """)
@@ -98,31 +90,3 @@ with form1:
     if submitted:
        pass
        
-
-
-import streamlit as st
-import streamlit as st
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
-
-# Set up Spotify credentials
-SPOTIPY_CLIENT_ID = '3e42d2e4c66c4bcebb10ba7c216edf86'
-SPOTIPY_CLIENT_SECRET = '872d5fe12bae4aa5abd92359f0c39f7f'
-SPOTIPY_REDIRECT_URI = 'https://music-recommendor-pjxy.onrender.com/'  # Your Streamlit app URL
-
-# Authentication
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
-    client_id=SPOTIPY_CLIENT_ID,
-    client_secret=SPOTIPY_CLIENT_SECRET,
-    redirect_uri=SPOTIPY_REDIRECT_URI,
-    scope="user-read-playback-state,user-modify-playback-state"
-))
-
-def play_track(track_id):
-    sp.start_playback(uris=[f'spotify:track:{track_id}'])
-
-track_id = st.text_input("Enter Spotify Track ID")
-if st.button("Play Song") and track_id:
-    play_track(track_id)
-    st.success(f"Playing track {track_id}")
-   
