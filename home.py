@@ -45,7 +45,7 @@ def stem(text):
   return " ".join(y)
 
 ps=PorterStemmer()
-c=CountVectorizer(max_features=10000,stop_words='english')
+c=CountVectorizer(max_features=2000,stop_words='english')
 de=c.fit_transform(s['ft']).toarray()
 nn=NearestNeighbors(n_neighbors=20,metric='cosine')
 nn.fit(de)
